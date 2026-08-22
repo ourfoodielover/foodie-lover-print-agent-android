@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp">
+
+    <TextView
+        android:id="@+id/textDeviceName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/ink"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="CN811-UEWB-FAAF" />
+
+    <TextView
+        android:id="@+id/textDeviceAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/ink_soft"
+        android:textSize="12sp"
+        tools:text="AA:BB:CC:11:22:33" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="14dp"
+        android:background="@color/line" />
+</LinearLayout>

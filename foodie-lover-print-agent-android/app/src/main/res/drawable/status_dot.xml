@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tinted programmatically (good/warn/danger) via ImageView.setColorFilter — one shape,
+     reused for Server / Printer / Service status rows so the three dots stay pixel-identical. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="@color/ink_soft" />
+    <size android:width="12dp" android:height="12dp" />
+</shape>

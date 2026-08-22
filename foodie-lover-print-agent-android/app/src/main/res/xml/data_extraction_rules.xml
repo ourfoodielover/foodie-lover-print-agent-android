@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- allowBackup is false and this app has no cloud/device backup agent, but the encrypted
+     preferences file (holding PRINT_AGENT_KEY) is explicitly excluded here as defense in
+     depth in case backup is ever turned on in a future build. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="foodie_print_agent_secure_prefs.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="foodie_print_agent_secure_prefs.xml" />
+    </device-transfer>
+</data-extraction-rules>

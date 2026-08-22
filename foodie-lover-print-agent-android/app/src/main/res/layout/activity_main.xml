@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FOODIE LOVER"
+            android:textColor="@color/ink"
+            android:textSize="14sp"
+            android:letterSpacing="0.12"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:text="PRINT SERVICE"
+            android:textColor="@color/accent"
+            android:textSize="22sp"
+            android:letterSpacing="0.05"
+            android:textStyle="bold" />
+
+        <!-- Server status -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MaterialComponents.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/line"
+            app:strokeWidth="1dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Server"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="12sp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/dotServer"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/status_dot" />
+                    <TextView
+                        android:id="@+id/textServerStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Checking…"
+                        android:textColor="@color/ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Printer status -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MaterialComponents.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/line"
+            app:strokeWidth="1dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Printer"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="12sp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/dotPrinter"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/status_dot" />
+                    <TextView
+                        android:id="@+id/textPrinterStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not configured"
+                        android:textColor="@color/ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Service status -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MaterialComponents.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/line"
+            app:strokeWidth="1dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Print Service"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="12sp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/dotService"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/status_dot" />
+                    <TextView
+                        android:id="@+id/textServiceStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stopped"
+                        android:textColor="@color/ink"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Last print -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MaterialComponents.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            app:cardBackgroundColor="@color/card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/line"
+            app:strokeWidth="1dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Last Print"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/textLastPrintOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="—"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/textLastPrintDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/ink_soft"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonToggleService"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/accent"
+            android:text="Start Print Service"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTestPrint"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="10dp"
+            app:strokeColor="@color/accent"
+            android:text="TEST PRINT"
+            android:textColor="@color/accent"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSettings"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Settings"
+            android:textAllCaps="false" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="14dp"
+            android:background="@color/line" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Printer:"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/textPrinterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Not selected"
+            android:textColor="@color/ink"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connection:"
+            android:textColor="@color/ink_soft"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/textConnectionType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bluetooth"
+            android:textColor="@color/ink"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+</ScrollView>

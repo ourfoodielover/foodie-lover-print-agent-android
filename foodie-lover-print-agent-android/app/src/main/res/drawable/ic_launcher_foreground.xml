@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple receipt/printer glyph, centered within the 108x108 adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,30 L74,30 L74,46 L82,46 A6,6 0 0 1 88,52 L88,72 A6,6 0 0 1 82,78 L74,78 L74,86 L34,86 L34,78 L26,78 A6,6 0 0 1 20,72 L20,52 A6,6 0 0 1 26,46 L34,46 Z M40,36 L40,46 L68,46 L68,36 Z M40,80 L68,80 L68,66 L40,66 Z" />
+    <path
+        android:fillColor="#0B6E7A"
+        android:pathData="M44,70 L64,70 L64,74 L44,74 Z M44,58 L64,58 L64,60 L44,60 Z" />
+</vector>
