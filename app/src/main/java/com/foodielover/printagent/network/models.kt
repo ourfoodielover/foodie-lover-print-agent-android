@@ -5,7 +5,19 @@ import org.json.JSONObject
 
 /** Mirrors buildKotPayload() in app/api/orders/[id]/route.ts -- the JSONB stored in
  *  print_jobs.payload. Field names match the JSON keys exactly (camelCase, as written by
- *  the Next.js route, not the snake_case used by the print_jobs table columns themselves). */
+ *  the Next.js route, not the snake_case used by the print_jobs table columns themselves).
+ *
+ *  The class name is historical (it started as "the KOT payload") and is kept as-is to avoid
+ *  an unnecessary rename across PrintService/TicketBuilder -- it now also carries the payload
+ *  for CUSTOMER_BILL / CUSTOMER_RECEIPT jobs. Every field below the original KOT set is a NEW,
+ *  purely additive, nullable field: a legacy KOT payload (which never contains any of them)
+ *  continues to parse exactly as before, and none of them are read by buildKot(), which is
+ *  unchanged. See TicketBuilder.buildBill()/buildReceipt() and DocumentType.kt for how they're
+ *  consumed, and the final report for the exact server contract these correspond to.
+ *
+ *  IMPORTANT: none of these are computed on-device. If the server doesn't send a field, the
+ *  corresponding line is simply omitted from the printed document -- Android never derives a
+ *  financial value (subtotal/discount/total/etc.) itself. */
 data class KotPayload(
     val orderId: String,
     val orderNumber: Int?,
@@ -16,17 +28,67 @@ data class KotPayload(
     val items: List<Item>,
     val notes: String?,
     val createdAt: String?,
+    // ── NEW: financial-document fields (CUSTOMER_BILL / CUSTOMER_RECEIPT only) ──────────────
+    /** Explicit document type, e.g. "KITCHEN_TICKET" | "CUSTOMER_BILL" | "CUSTOMER_RECEIPT".
+     *  Not sent by the server today -- see DocumentType.kt for full resolution rules and the
+     *  final report for why this has to live inside the JSONB payload rather than job_type. */
+    val documentType: String? = null,
+    /** Bill/receipt/order number to print, e.g. "Bill #100". Falls back to orderNumber/orderId
+     *  in the formatter if absent -- never required on its own. */
+    val documentNumber: String? = null,
+    /** Customer phone -- pickup/delivery receipts only; dine-in bills must not print this
+     *  unless the server explicitly sends it for a specific existing requirement. */
+    val phone: String? = null,
+    val subtotal: Double? = null,
+    val couponCode: String? = null,
+    val discountLabel: String? = null,
+    val discountAmount: Double? = null,
+    /** Authoritative grand total / amount due. REQUIRED for CUSTOMER_BILL and CUSTOMER_RECEIPT
+     *  -- buildBill()/buildReceipt() fail the job safely (never fall back to KOT) if absent. */
+    val total: Double? = null,
+    /** e.g. "PAID" | "PENDING". Printed verbatim, never inferred from document type or any
+     *  other field -- if absent, no payment-status line is printed at all. */
+    val paymentStatus: String? = null,
+    /** e.g. "UPI" | "CASH" | "CARD" | "CASH ON DELIVERY". */
+    val paymentMethod: String? = null,
+    /** Delivery COD only -- amount to physically collect. Printed prominently when present and
+     *  greater than zero; never printed alongside an explicit paymentStatus == "PAID". */
+    val amountToCollect: Double? = null,
 ) {
-    data class Item(val name: String, val qty: Int)
+    data class Item(
+        val name: String,
+        val qty: Int,
+        // ── NEW: optional per-line financial fields (see KotPayload's own NEW-fields note) ──
+        /** e.g. "Half" / "Full" / "Large" -- printed on its own line under the item name when
+         *  present. The current server bakes variant text into `name` itself (see
+         *  buildKotPayload()); this field is forward-compatible in case that changes. */
+        val variant: String? = null,
+        val unitPrice: Double? = null,
+        val lineTotal: Double? = null,
+    )
 
     companion object {
+        private fun optDoubleOrNull(obj: JSONObject, key: String): Double? =
+            if (obj.has(key) && !obj.isNull(key)) obj.optDouble(key).takeUnless { it.isNaN() } else null
+
+        private fun optStringOrNull(obj: JSONObject, key: String): String? =
+            if (obj.has(key) && !obj.isNull(key)) obj.optString(key).takeIf { it.isNotBlank() } else null
+
         fun fromJson(obj: JSONObject): KotPayload {
             val items = mutableListOf<Item>()
             val arr: JSONArray? = obj.optJSONArray("items")
             if (arr != null) {
                 for (i in 0 until arr.length()) {
                     val item = arr.getJSONObject(i)
-                    items.add(Item(name = item.optString("name", ""), qty = item.optInt("qty", 1)))
+                    items.add(
+                        Item(
+                            name = item.optString("name", ""),
+                            qty = item.optInt("qty", 1),
+                            variant = optStringOrNull(item, "variant"),
+                            unitPrice = optDoubleOrNull(item, "unitPrice"),
+                            lineTotal = optDoubleOrNull(item, "lineTotal"),
+                        ),
+                    )
                 }
             }
             return KotPayload(
@@ -39,6 +101,17 @@ data class KotPayload(
                 items = items,
                 notes = if (obj.isNull("notes")) null else obj.optString("notes"),
                 createdAt = if (obj.isNull("createdAt")) null else obj.optString("createdAt"),
+                documentType = optStringOrNull(obj, "documentType"),
+                documentNumber = optStringOrNull(obj, "documentNumber"),
+                phone = optStringOrNull(obj, "phone"),
+                subtotal = optDoubleOrNull(obj, "subtotal"),
+                couponCode = optStringOrNull(obj, "couponCode"),
+                discountLabel = optStringOrNull(obj, "discountLabel"),
+                discountAmount = optDoubleOrNull(obj, "discountAmount"),
+                total = optDoubleOrNull(obj, "total"),
+                paymentStatus = optStringOrNull(obj, "paymentStatus"),
+                paymentMethod = optStringOrNull(obj, "paymentMethod"),
+                amountToCollect = optDoubleOrNull(obj, "amountToCollect"),
             )
         }
     }

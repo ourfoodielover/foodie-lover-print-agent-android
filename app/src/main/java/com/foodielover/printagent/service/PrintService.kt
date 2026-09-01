@@ -13,7 +13,10 @@ import androidx.core.app.NotificationCompat
 import com.foodielover.printagent.bluetooth.BluetoothPrinterManager
 import com.foodielover.printagent.config.AppConfig
 import com.foodielover.printagent.config.SecureConfig
+import com.foodielover.printagent.escpos.DocumentType
 import com.foodielover.printagent.escpos.TicketBuilder
+import com.foodielover.printagent.escpos.TicketFormatException
+import com.foodielover.printagent.escpos.resolveDocumentType
 import com.foodielover.printagent.network.PrintJob
 import com.foodielover.printagent.network.PrintJobsApi
 import com.foodielover.printagent.ui.MainActivity
@@ -183,16 +186,28 @@ class PrintService : Service() {
         }
     }
 
-    /** Direct port of processJob() in print-agent/index.js. */
+    /** Direct port of processJob() in print-agent/index.js, extended with one routing decision:
+     *  which formatter a job's document type maps to. See escpos/DocumentType.kt for the full
+     *  resolution rules. An unrecognized explicit document type is deliberately NOT a fallback
+     *  to buildKot() -- it throws here and is caught below like any other print failure, so one
+     *  bad/unknown job is marked failed and the loop moves on to the next job. */
     private suspend fun processJob(api: PrintJobsApi, job: PrintJob) = printMutex.withLock {
         val orderLabel = "Order #${job.payload.orderNumber ?: job.orderId}"
         try {
             api.updateJobStatus(job.id, "printing")
 
-            val ticket = if (job.jobType == "receipt") {
-                TicketBuilder.buildReceipt(job.payload, config.charsPerLine, config.restaurantName)
-            } else {
-                TicketBuilder.buildKot(job.payload, config.charsPerLine)
+            val ticket = when (resolveDocumentType(job)) {
+                DocumentType.KITCHEN_TICKET -> TicketBuilder.buildKot(job.payload, config.charsPerLine)
+                DocumentType.CUSTOMER_BILL -> TicketBuilder.buildBill(
+                    job.payload, config.charsPerLine, config.restaurantName, isReprint = job.isReprint,
+                )
+                DocumentType.CUSTOMER_RECEIPT -> TicketBuilder.buildReceipt(
+                    job.payload, config.charsPerLine, config.restaurantName, isReprint = job.isReprint,
+                )
+                DocumentType.UNKNOWN -> throw TicketFormatException(
+                    "Unrecognized document type for job ${job.id} (job_type=\"${job.jobType}\", " +
+                        "payload.documentType=\"${job.payload.documentType}\") -- refusing to print",
+                )
             }
 
             printTicketOrThrow(ticket)
