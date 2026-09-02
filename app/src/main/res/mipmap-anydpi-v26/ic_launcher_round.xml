@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Identical to ic_launcher.xml; adaptive icons are auto-masked by the launcher (circle,
+     squircle, rounded square, etc.), so the round variant reuses the exact same
+     background/foreground drawables rather than needing separate artwork. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

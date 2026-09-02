@@ -99,7 +99,14 @@ object TicketBuilder {
      * amountToCollect) is printed only when the server actually supplies it.
      */
     fun buildReceipt(payload: KotPayload, charsPerLine: Int, restaurantName: String, isReprint: Boolean = false): ByteArray =
-        renderFinancialDocument(DocumentType.CUSTOMER_RECEIPT, payload, charsPerLine, restaurantName, isReprint)
+        renderFinancialDocument(DocumentType.CUSTOMER_RECEIPT, payload, charsPerLine, restaurantName, isReprint).toByteArray()
+
+    /** DEBUG-only dry-run preview -- runs the exact same validation and content decisions as
+     *  buildReceipt() (same shared function, same required-field checks, same exceptions on
+     *  failure) but returns plain text instead of ESC/POS bytes. Never writes to Bluetooth,
+     *  never called by the production print path. See debug/JobDiagnostics.kt. */
+    fun previewReceipt(payload: KotPayload, charsPerLine: Int, restaurantName: String, isReprint: Boolean = false): String =
+        renderFinancialDocument(DocumentType.CUSTOMER_RECEIPT, payload, charsPerLine, restaurantName, isReprint).previewText()
 
     /**
      * CUSTOMER_BILL -- a financial statement of what the customer owes, not necessarily paid
@@ -108,7 +115,11 @@ object TicketBuilder {
      * buildReceipt() above.
      */
     fun buildBill(payload: KotPayload, charsPerLine: Int, restaurantName: String, isReprint: Boolean = false): ByteArray =
-        renderFinancialDocument(DocumentType.CUSTOMER_BILL, payload, charsPerLine, restaurantName, isReprint)
+        renderFinancialDocument(DocumentType.CUSTOMER_BILL, payload, charsPerLine, restaurantName, isReprint).toByteArray()
+
+    /** DEBUG-only dry-run preview -- see previewReceipt() above for what this does and why. */
+    fun previewBill(payload: KotPayload, charsPerLine: Int, restaurantName: String, isReprint: Boolean = false): String =
+        renderFinancialDocument(DocumentType.CUSTOMER_BILL, payload, charsPerLine, restaurantName, isReprint).previewText()
 
     // ── Shared engine for buildBill()/buildReceipt() ────────────────────────────────────────
     // Deliberately NOT shared with buildKot() -- KOT is regression-protected and untouched
@@ -121,7 +132,7 @@ object TicketBuilder {
         charsPerLine: Int,
         restaurantName: String,
         isReprint: Boolean,
-    ): ByteArray {
+    ): TicketBuffer {
         // ── Required-field validation -- fail safely, never guess, never fall back to KOT ──
         val total = payload.total
             ?: throw TicketFormatException("${kind.name} payload for order ${payload.orderId} is missing required field: total")
@@ -234,7 +245,7 @@ object TicketBuilder {
         divider(buf, charsPerLine, '=')
         buf.raw(EscPos.feed(3))
         buf.raw(EscPos.CUT)
-        return buf.toByteArray()
+        return buf
     }
 
     // ── Formatting helpers used only by the financial-document formatters above ────────────

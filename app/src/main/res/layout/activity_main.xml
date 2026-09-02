@@ -276,5 +276,27 @@
             android:textColor="@color/ink"
             android:textSize="15sp" />
 
+        <!-- DEBUG-only diagnostics: visibility is set to GONE/VISIBLE in code based on
+             BuildConfig.DEBUG (see MainActivity). Dry-run preview only; never prints,
+             never touches Bluetooth, never changes a job's server-side status. -->
+        <View
+            android:id="@+id/dividerDebug"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:background="@color/line"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDebugDryRun"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔍 Debug: Preview Bill/Receipt Jobs (No Print)"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
     </LinearLayout>
 </ScrollView>

@@ -24,9 +24,17 @@ object EscPos {
     fun feed(n: Int): ByteArray = byteArrayOf(ESC.toByte(), 0x64, n.toByte())
 }
 
-/** Accumulates ESC/POS bytes the same way index.js builds up a Buffer via Buffer.concat. */
+/** Accumulates ESC/POS bytes the same way index.js builds up a Buffer via Buffer.concat.
+ *
+ *  Also -- purely additively -- keeps a parallel plain-text log of every line() call. raw()
+ *  (ESC/POS control bytes) never touches it. This costs nothing behaviorally: toByteArray()'s
+ *  output is byte-for-byte identical to before, and buildKot()/buildTestTicket() never read
+ *  previewText(), so this has zero effect on the regression-protected KOT path. It exists so
+ *  the DEBUG-only dry-run diagnostics (see debug/JobDiagnostics.kt) can show what a financial
+ *  document would look like without ever touching Bluetooth. */
 class TicketBuffer {
     private val out = ByteArrayOutputStream()
+    private val previewLines = mutableListOf<String>()
 
     fun raw(bytes: ByteArray): TicketBuffer {
         out.write(bytes)
@@ -37,8 +45,13 @@ class TicketBuffer {
     fun line(text: String = ""): TicketBuffer {
         out.write(text.toByteArray(StandardCharsets.UTF_8))
         out.write('\n'.code)
+        previewLines.add(text)
         return this
     }
 
     fun toByteArray(): ByteArray = out.toByteArray()
+
+    /** Plain-text preview -- every line() call's text, one per line, in order. Never includes
+     *  raw ESC/POS control bytes since those never go through line(). */
+    fun previewText(): String = previewLines.joinToString("\n")
 }
