@@ -39,6 +39,12 @@ android {
 
     buildFeatures {
         viewBinding = true
+        // Required for the generated com.foodielover.printagent.BuildConfig class (BuildConfig.DEBUG
+        // gates the debug-only Bill/Receipt dry-run diagnostics in MainActivity -- see
+        // debug/JobDiagnostics.kt). AGP 8.x no longer generates BuildConfig by default; this flag
+        // is the fix, not a namespace/import problem -- the import in MainActivity.kt was already
+        // correct (namespace = "com.foodielover.printagent" above, matching applicationId).
+        buildConfig = true
     }
 }
 
