@@ -224,20 +224,22 @@ object TicketBuilder {
             buf.raw(EscPos.BOLD_OFF)
             if (!payload.paymentMethod.isNullOrBlank()) buf.line("Payment: ${payload.paymentMethod}")
             if (!payload.paymentStatus.isNullOrBlank()) buf.line("Status: ${payload.paymentStatus}")
+        }
 
-            // ── COD emphasis block -- delivery only, only when the server sent an amount,
-            // and never when the server has explicitly marked the order PAID. ──────────────
-            val amountToCollect = payload.amountToCollect
-            if (isDelivery && amountToCollect != null && amountToCollect > 0.0 && paidNormalized != "PAID") {
-                buf.raw(EscPos.ALIGN_CENTER)
-                divider(buf, charsPerLine, '*')
-                buf.raw(EscPos.BOLD_ON)
-                buf.line("AMOUNT TO COLLECT")
-                buf.line("Rs. ${formatMoney(amountToCollect)}")
-                buf.raw(EscPos.BOLD_OFF)
-                divider(buf, charsPerLine, '*')
-                buf.raw(EscPos.ALIGN_LEFT)
-            }
+        // ── COD emphasis block -- delivery only, only when the server sent an amount, and
+        // never when the server has explicitly marked the order PAID. Shared by BOTH
+        // CUSTOMER_BILL and CUSTOMER_RECEIPT (previously CUSTOMER_RECEIPT-only -- a Bill for a
+        // COD delivery order needs the same "collect this much" reminder a Receipt gets). ────
+        val amountToCollect = payload.amountToCollect
+        if (isDelivery && amountToCollect != null && amountToCollect > 0.0 && paidNormalized != "PAID") {
+            buf.raw(EscPos.ALIGN_CENTER)
+            divider(buf, charsPerLine, '*')
+            buf.raw(EscPos.BOLD_ON)
+            buf.line("AMOUNT TO COLLECT")
+            buf.line("Rs. ${formatMoney(amountToCollect)}")
+            buf.raw(EscPos.BOLD_OFF)
+            divider(buf, charsPerLine, '*')
+            buf.raw(EscPos.ALIGN_LEFT)
         }
 
         buf.raw(EscPos.ALIGN_CENTER)

@@ -70,6 +70,14 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     testImplementation("junit:junit:4.13.2")
+    // Real org.json implementation for JVM unit tests -- app/src/test runs on the plain JVM,
+    // where org.json.JSONObject/JSONArray otherwise resolve to Android's stub jar (every method
+    // throws "not mocked" by default). KotPayload/PrintJob.fromJson() (network/models.kt) use
+    // org.json directly, so parser + formatter tests (KotPayloadParsingTest,
+    // TicketBuilderFinancialTest) need the real implementation on the classpath to construct and
+    // read actual JSONObjects. Does not affect the app's runtime org.json usage at all -- Android
+    // provides its own real org.json on-device; this is test-only.
+    testImplementation("org.json:json:20231013")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }

@@ -21,6 +21,13 @@ import org.json.JSONObject
 data class KotPayload(
     val orderId: String,
     val orderNumber: Int?,
+    /** "dine-in" | "pickup" | "delivery". Legacy KOT payloads (buildKotPayload() in
+     *  app/api/orders/[id]/route.ts) send this under the key "type". The newer CUSTOMER_BILL /
+     *  CUSTOMER_RECEIPT payload builder sends the same concept under the key "orderType"
+     *  instead. Both are accepted -- see fromJson() below -- with "orderType" taking priority
+     *  when a payload happens to contain both (it never should in practice, but the financial
+     *  key is treated as canonical since it's the newer/authoritative one). This field itself
+     *  is unchanged; only which JSON key(s) populate it changed. */
     val type: String?,
     val tableId: String?,
     val customerName: String?,
@@ -37,7 +44,11 @@ data class KotPayload(
      *  in the formatter if absent -- never required on its own. */
     val documentNumber: String? = null,
     /** Customer phone -- pickup/delivery receipts only; dine-in bills must not print this
-     *  unless the server explicitly sends it for a specific existing requirement. */
+     *  unless the server explicitly sends it for a specific existing requirement. Legacy KOT
+     *  payloads send this under the key "phone"; the CUSTOMER_BILL / CUSTOMER_RECEIPT payload
+     *  builder sends it under "customerPhone" instead. Both are accepted -- see fromJson()
+     *  below -- with "customerPhone" taking priority as the canonical/newer key. Never derived
+     *  from customerName; parsed only from these two explicit keys. */
     val phone: String? = null,
     val subtotal: Double? = null,
     val couponCode: String? = null,
@@ -94,7 +105,9 @@ data class KotPayload(
             return KotPayload(
                 orderId = obj.optString("orderId", ""),
                 orderNumber = if (obj.isNull("orderNumber")) null else obj.optInt("orderNumber"),
-                type = obj.optString("type", null),
+                // Canonical financial key first ("orderType"), legacy KOT key as fallback
+                // ("type") -- see the field's own doc comment above for why both exist.
+                type = optStringOrNull(obj, "orderType") ?: optStringOrNull(obj, "type"),
                 tableId = if (obj.isNull("tableId")) null else obj.optString("tableId"),
                 customerName = if (obj.isNull("customerName")) null else obj.optString("customerName"),
                 deliveryAddress = if (obj.isNull("deliveryAddress")) null else obj.optString("deliveryAddress"),
@@ -103,7 +116,10 @@ data class KotPayload(
                 createdAt = if (obj.isNull("createdAt")) null else obj.optString("createdAt"),
                 documentType = optStringOrNull(obj, "documentType"),
                 documentNumber = optStringOrNull(obj, "documentNumber"),
-                phone = optStringOrNull(obj, "phone"),
+                // Canonical financial key first ("customerPhone"), legacy KOT key as fallback
+                // ("phone") -- see the field's own doc comment above. Never parsed from
+                // customerName.
+                phone = optStringOrNull(obj, "customerPhone") ?: optStringOrNull(obj, "phone"),
                 subtotal = optDoubleOrNull(obj, "subtotal"),
                 couponCode = optStringOrNull(obj, "couponCode"),
                 discountLabel = optStringOrNull(obj, "discountLabel"),
